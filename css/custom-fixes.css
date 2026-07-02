@@ -1,0 +1,400 @@
+/* =====================================================================
+ * custom-fixes.css
+ * Safety overrides and design refinements for the GreenUp / Gardyn demo.
+ * Loaded AFTER all template CSS files so these rules win on equal specificity.
+ * ===================================================================== */
+
+/* ------------------------------------------------------------------ */
+/* 1. Preloader safety: never let #de-loader stay forever.            */
+/*    If JS fails to load, hide the loader after 6s via CSS animation. */
+/* ------------------------------------------------------------------ */
+#de-loader {
+  animation: de-loader-autofade 0.4s ease 6s forwards;
+  -webkit-animation: de-loader-autofade 0.4s ease 6s forwards;
+}
+
+@keyframes de-loader-autofade {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+  }
+}
+
+/* Also fade out when body has .loaded class (set by JS) */
+body.loaded #de-loader,
+html.loaded #de-loader {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. WOW safety: if WOW.js is not loaded, make .wow elements visible */
+/*    after a 3s delay (animation plays then static fallback).        */
+/* ------------------------------------------------------------------ */
+.wow {
+  animation: wow-fallback-show 0s linear 3s forwards;
+  -webkit-animation: wow-fallback-show 0s linear 3s forwards;
+}
+
+@keyframes wow-fallback-show {
+  to {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+/* Once WOW.js adds .animated, ensure visible */
+.wow.animated {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Header fix: solid background even before .smaller is added      */
+/*    (fixes the "transparent header on scroll" complaint).           */
+/* ------------------------------------------------------------------ */
+
+/* On initial load: keep transparent only if hero is dark (header on top of dark hero image).
+   For header-light pages, force a subtle white tint so the dark logo/menu is readable. */
+header.header-light.transparent {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: saturate(180%) blur(8px);
+  -webkit-backdrop-filter: saturate(180%) blur(8px);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+/* When scrolled - solid white */
+header.header-light.smaller,
+header.header-light.scroll-on {
+  background: #ffffff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+/* For dark headers (no .header-light), still add slight dark tint when transparent */
+header.transparent:not(.header-light) {
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+header.transparent:not(.header-light).smaller {
+  background: var(--bg-dark-1, #1a1a1a);
+}
+
+/* Topbar visible only at the top of page (not when scrolled) */
+header.smaller #topbar {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  transition: all .3s ease;
+}
+
+header #topbar {
+  transition: all .3s ease;
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. Header text contrast: make sure menu items stay readable        */
+/* ------------------------------------------------------------------ */
+header.header-light #mainmenu > li > a {
+  color: #1a1a1a;
+  text-shadow: none;
+}
+
+header.header-light .menu_side_area .btn-main {
+  color: #fff;
+}
+
+header.header-light .topbar-widget a,
+header.header-light .social-icons a {
+  color: #555;
+}
+
+header.header-light .topbar-widget a:hover,
+header.header-light .social-icons a:hover {
+  color: var(--primary, #4a7c2a);
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. Body / hero text contrast fixes                                  */
+/* ------------------------------------------------------------------ */
+
+/* Hero subtitle on white-ish backgrounds */
+.subtitle {
+  color: var(--primary, #4a7c2a);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Lead paragraph - ensure readable contrast */
+.lead {
+  color: #2c2c2c;
+  font-weight: 400;
+}
+
+/* Generic paragraph contrast fix on light sections */
+section:not(.section-dark) p,
+section:not(.section-dark) .lead,
+.bg-light p {
+  color: #2c2c2c;
+}
+
+/* Hero overlay text */
+.jarallax + section p,
+section.relative.text-light p {
+  color: #f5f5f5;
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. Remove inaccurate hover captions over Latest Works / gallery    */
+/*    (per user request: captions are inaccurate, remove them).       */
+/* ------------------------------------------------------------------ */
+
+/* The hover description text that appears over project images */
+.hover .hover-op-1.abs-centered,
+.hover .abs-centered.hover-op-1 {
+  display: none !important;
+}
+
+/* The "Name / Garden Beauty / Location / California" badge that appears on hover */
+.hover .bg-blur.d-flex.m-4.p-3.px-4.rounded-1.justify-content-between.align-items-center {
+  display: none !important;
+}
+
+/* The green overlay that tints the image on hover */
+.hover .abs.bg-color.z-2.top-0.w-100.h-100.hover-op-1 {
+  background: rgba(74, 124, 42, 0.0) !important;
+  pointer-events: none;
+}
+
+/* Keep a subtle gradient at the bottom so the image still has visual interest */
+.hover .gradient-trans-color-bottom {
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 60%) !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. Contact form fixes                                              */
+/* ------------------------------------------------------------------ */
+
+/* Remove the broken reCAPTCHA widget (uses an invalid sitekey) */
+.g-recaptcha {
+  display: none !important;
+}
+
+/* Form input styling - clearer borders, better focus state */
+#contact_form .form-control,
+.form-transparent .form-control {
+  border: 1.5px solid #d4d4d4;
+  background: #fff;
+  color: #1a1a1a;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 15px;
+  transition: border-color .2s, box-shadow .2s;
+  margin-bottom: 14px;
+}
+
+#contact_form .form-control:focus,
+.form-transparent .form-control:focus {
+  border-color: var(--primary, #4a7c2a);
+  box-shadow: 0 0 0 3px rgba(74, 124, 42, 0.15);
+  outline: none;
+}
+
+#contact_form .form-control::placeholder {
+  color: #888;
+}
+
+/* Submit button - use the brand green */
+#contact_form #send_message,
+#contact_form .btn-main {
+  width: 100%;
+  padding: 14px 24px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+}
+
+#contact_form #send_message:hover,
+#contact_form .btn-main:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(74, 124, 42, 0.25);
+}
+
+/* Success / error message styling */
+#success_message,
+#error_message {
+  display: none;
+  padding: 14px 18px;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+#success_message {
+  background: #e7f4dc;
+  color: #2d5a16;
+  border: 1px solid #b6d99a;
+}
+
+#error_message {
+  background: #fde7e7;
+  color: #8a1a1a;
+  border: 1px solid #f5b5b5;
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. Topbar - hide on small screens, ensure proper colors             */
+/* ------------------------------------------------------------------ */
+@media (max-width: 767px) {
+  #topbar {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* 9. Smooth-scroll + scroll-padding for sticky header offset         */
+/* ------------------------------------------------------------------ */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
+
+body {
+  font-family: var(--body-font, "Inter"), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #1a1a1a;
+  background: #ffffff;
+}
+
+/* ------------------------------------------------------------------ */
+/* 10. Project / Latest Works image cards - cleaner look               */
+/* ------------------------------------------------------------------ */
+.hover.rounded-1.overflow-hidden.relative {
+  border-radius: 12px !important;
+}
+
+.hover.rounded-1.overflow-hidden.relative img {
+  transition: transform .6s ease;
+}
+
+.hover:hover.rounded-1.overflow-hidden.relative img,
+.hover.rounded-1.overflow-hidden.relative:hover img {
+  transform: scale(1.04);
+}
+
+/* ------------------------------------------------------------------ */
+/* 11. Reduce noise on hover overlays site-wide                        */
+/* ------------------------------------------------------------------ */
+.hover-op-1,
+.hover-op-0,
+.hover-op-05 {
+  transition: opacity .35s ease;
+}
+
+/* ------------------------------------------------------------------ */
+/* 12. Subfooter dark contrast fix                                     */
+/* ------------------------------------------------------------------ */
+.subfooter {
+  color: #c5c5c5;
+  background: #131313;
+  padding: 18px 0;
+}
+
+.subfooter a {
+  color: #c5c5c5;
+}
+
+.subfooter a:hover {
+  color: var(--primary, #4a7c2a);
+}
+
+/* ------------------------------------------------------------------ */
+/* 13. Footer text contrast                                            */
+/* ------------------------------------------------------------------ */
+footer.section-dark,
+footer.section-dark p,
+footer.section-dark .widget h5 {
+  color: #e5e5e5;
+}
+
+footer.section-dark .widget ul li a {
+  color: #b5b5b5;
+}
+
+footer.section-dark .widget ul li a:hover {
+  color: var(--primary, #4a7c2a);
+}
+
+footer.section-dark .fw-bold.text-white {
+  color: #ffffff !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* 14. H1/H2/H3 readability                                           */
+/* ------------------------------------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+  color: #1a1a1a;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+section:not(.section-dark) h1,
+section:not(.section-dark) h2,
+section:not(.section-dark) h3,
+section:not(.section-dark) h4 {
+  color: #1a1a1a;
+}
+
+section.text-light h1,
+section.text-light h2,
+section.text-light h3,
+section.text-light h4,
+section.relative.text-light h1,
+section.relative.text-light h2,
+section.relative.text-light h3 {
+  color: #ffffff;
+}
+
+/* ------------------------------------------------------------------ */
+/* 15. Buttons - clearer hover state                                   */
+/* ------------------------------------------------------------------ */
+.btn-main {
+  display: inline-block;
+  padding: 12px 26px;
+  background: var(--primary, #4a7c2a);
+  color: #fff !important;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .2s, transform .15s, box-shadow .2s;
+}
+
+.btn-main:hover {
+  background: var(--primary-dark, #3a6320);
+  color: #fff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(74, 124, 42, 0.25);
+}
+
+.btn-line {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 1.5px solid currentColor;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all .2s;
+}
+
+.btn-line:hover {
+  background: var(--primary, #4a7c2a);
+  border-color: var(--primary, #4a7c2a);
+  color: #fff !important;
+}
